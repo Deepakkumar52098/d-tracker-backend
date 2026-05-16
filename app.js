@@ -7,6 +7,15 @@ const app = express()
 
 
 app.use(bodyParser.json())
+
+
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,DELETE,PUT')
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    next()
+})
+
 app.use('/salaryBreakup', salaryBreakup)
 
 mongoose.connect('mongodb+srv://Deepakkumar52098:Deepakkumar%402016@cluster0.yxkfr9z.mongodb.net/d-Tracker?appName=Cluster0')
