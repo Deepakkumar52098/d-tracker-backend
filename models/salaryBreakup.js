@@ -3,6 +3,10 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const salaryBreakupSchema = new Schema({
+    date:{
+        type: Date,
+        required: true
+    },
     income: {
         type: Number,
         required: true
