@@ -1,7 +1,8 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
-const salaryBreakup = require('./routes/salaryBreakup')
+const salaryBreakup = require('./src/routes/salaryBreakup')
+const auth = require('./src/routes/auth')
 
 const app = express()
 
@@ -16,6 +17,7 @@ app.use((req, res, next) => {
     next()
 })
 
+app.use('/auth', auth)
 app.use('/salaryBreakup', salaryBreakup)
 
 mongoose.connect('mongodb+srv://Deepakkumar52098:Deepakkumar%402016@cluster0.yxkfr9z.mongodb.net/d-Tracker?appName=Cluster0')

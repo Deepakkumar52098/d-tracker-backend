@@ -1,12 +1,14 @@
 const express = require('express')
-const salaryBreakup = require('../controllers/salaryBreakup')
+const { getDetails, editDetails, addDetails, deleteDetails } = require('../controllers/salaryBreakup')
 
 const router = express.Router()
 
-router.post('/addDetails', salaryBreakup.addDetails)
+router.post('/addDetails', addDetails)
 
-router.get('/getDetails/:year', salaryBreakup.getDetails)
+router.post('/editDetails', editDetails)
 
-router.delete('/deleteDetail/:id', salaryBreakup.deleteDetails)
+router.get('/getDetails/:year', getDetails)
+
+router.delete('/deleteDetail', deleteDetails)
 
 module.exports = router

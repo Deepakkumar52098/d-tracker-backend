@@ -30,8 +30,8 @@ exports.addDetails = (req, res, next) => {
     })
         .then(result => {
             if (result) {
-                const error = new Error('Income detail exists. Please try updating it.')
-                error.statusCode = 400
+                const error = new Error('Income detail exists. Please try editing it.')
+                error.statusCode = 409
                 throw error
             }
             const salaryBreakupDetails = new SalaryBreakup({
@@ -48,7 +48,7 @@ exports.addDetails = (req, res, next) => {
             // if(!breakupDetails){
             //     return
             // }
-            res.status(201).json({ breakupDetails, message: 'Income details added successfully' })
+            res.status(201).json({ breakupDetails, message: 'Income details added successfully.' })
         })
         .catch(err => {
             res.status(err.statusCode || 500).json({ message: err.message })
@@ -64,9 +64,10 @@ exports.getDetails = (req, res, next) => {
             $lt: new Date(year + 1, 0, 1)
         }
     })
+        .sort({ date: 1 })
         .then(data => {
             const updatedData = salaryBreakupUtils.getUpdatedData(data)
-            res.status(200).json({ breakupDetails: updatedData, message: 'All salary details fetched successfully' })
+            res.status(200).json({ data: updatedData, message: 'All salary details fetched successfully.' })
         })
         .catch(err => {
             res.status(500).json({ message: err.message })
@@ -74,7 +75,7 @@ exports.getDetails = (req, res, next) => {
 }
 
 exports.deleteDetails = (req, res, next) => {
-    const id = req.params.id
+    const id = req.body.id
     SalaryBreakup.findByIdAndDelete(id)
         .then(data => {
             if (data) {
@@ -83,9 +84,37 @@ exports.deleteDetails = (req, res, next) => {
             throw new Error('Item not found')
         })
         .then(result => {
-            res.status(200).json({ data: result, message: 'Income details deleted successfully' })
+            res.status(200).json({ data: result, message: 'Income details deleted successfully.' })
         })
         .catch(err => {
-            res.status(500).json({ message: err })
+            res.status(500).json({ message: err.message })
+        })
+}
+
+exports.editDetails = (req, res, next) => {
+    const { date, income } = req.body
+    SalaryBreakup.findOne({ date })
+        .then(result => {
+            if (result) {
+                const { emergencyFund, savings, expenses, vacation } = salaryBreakupUtils.getSalaryBreakupDetails(income)
+                result.income = income
+                result.emergencyFund = emergencyFund
+                result.savings = savings
+                result.expenses = expenses
+                result.vacation = vacation
+                return result.save()
+            }
+            const error = new Error('No data available for the selected date.')
+            error.statusCode = 400
+            throw error
+
+        })
+        .then(response => {
+            res.status(201).json({ breakupDetails: response, message: 'Income details updated successfully.' })
+        })
+        .catch(err => {
+            res.status(err.statusCode || 500).json({
+                message: err.message
+            })
         })
 }
